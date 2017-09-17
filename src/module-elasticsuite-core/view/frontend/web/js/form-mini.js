@@ -221,7 +221,7 @@ define([
          *
          * @private
          */
-        _onPropertyChange: function () {
+        _onPropertyChange: _.debounce(function () {
             var searchField = this.element,
                 clonePosition = {
                     position: 'absolute',
@@ -308,7 +308,7 @@ define([
                 this._updateAriaHasPopup(false);
                 this.element.removeAttr('aria-activedescendant');
             }
-        },
+        }, 250),
 
         /**
          * Executes when keys are pressed in the search input field. Performs specific actions
