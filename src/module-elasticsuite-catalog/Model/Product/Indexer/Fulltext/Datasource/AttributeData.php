@@ -48,7 +48,7 @@ class AttributeData extends AbstractAttributeData implements DatasourceInterface
             $childrenIndexData   = $this->addAttributeData($storeId, $allChildrenIds);
 
             foreach ($childrenIndexData as $childrenId => $childrenData) {
-                $enabled = current($childrenData['status']) == 1;
+                $enabled = isset($childrenData['status']) && current($childrenData['status']) == 1;
                 if ($enabled === false) {
                     unset($childrenIndexData[$childrenId]);
                 }
@@ -123,7 +123,7 @@ class AttributeData extends AbstractAttributeData implements DatasourceInterface
                 $parentData[$attributeCode] = [];
             }
 
-            $parentData[$attributeCode] = array_unique(array_merge($parentData[$attributeCode], $value));
+            $parentData[$attributeCode] = array_values(array_unique(array_merge($parentData[$attributeCode], $value)));
         }
     }
 

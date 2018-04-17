@@ -79,20 +79,24 @@ class Spellchecker implements SpellcheckerInterface
      */
     private function loadSpellingType(RequestInterface $request)
     {
-        $cutoffFrequencyLimit = $this->getCutoffrequencyLimit($request);
-        $termVectors          = $this->getTermVectors($request);
-        $queryTermStats       = $this->parseTermVectors($termVectors, $cutoffFrequencyLimit);
-
         $spellingType = self::SPELLING_TYPE_FUZZY;
 
-        if ($queryTermStats['total'] == $queryTermStats['stop']) {
-            $spellingType = self::SPELLING_TYPE_PURE_STOPWORDS;
-        } elseif ($queryTermStats['total'] == $queryTermStats['stop'] + $queryTermStats['exact']) {
-            $spellingType = self::SPELLING_TYPE_EXACT;
-        } elseif ($queryTermStats['missing'] == 0) {
-            $spellingType = self::SPELLING_TYPE_MOST_EXACT;
-        } elseif ($queryTermStats['total'] - $queryTermStats['missing'] > 0) {
-            $spellingType = self::SPELLING_TYPE_MOST_FUZZY;
+        try {
+            $cutoffFrequencyLimit = $this->getCutoffrequencyLimit($request);
+            $termVectors          = $this->getTermVectors($request);
+            $queryTermStats       = $this->parseTermVectors($termVectors, $cutoffFrequencyLimit);
+
+            if ($queryTermStats['total'] == $queryTermStats['stop']) {
+                $spellingType = self::SPELLING_TYPE_PURE_STOPWORDS;
+            } elseif ($queryTermStats['total'] == $queryTermStats['stop'] + $queryTermStats['exact']) {
+                $spellingType = self::SPELLING_TYPE_EXACT;
+            } elseif ($queryTermStats['missing'] == 0) {
+                $spellingType = self::SPELLING_TYPE_MOST_EXACT;
+            } elseif ($queryTermStats['total'] - $queryTermStats['missing'] > 0) {
+                $spellingType = self::SPELLING_TYPE_MOST_FUZZY;
+            }
+        } catch (\Exception $e) {
+            ;
         }
 
         return $spellingType;
@@ -141,6 +145,7 @@ class Spellchecker implements SpellcheckerInterface
             'type'            => $request->getType(),
             'id'              => '',
             'term_statistics' => true,
+            'dfs'             => true,
         ];
 
         $termVectorsQuery['body']['doc'] = [MappingInterface::DEFAULT_SPELLING_FIELD => $request->getQueryText()];
