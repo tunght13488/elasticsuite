@@ -82,7 +82,7 @@ class Attribute extends \Magento\CatalogSearch\Model\Layer\Filter\Attribute impl
 
         $this->tagFilter = $tagFilter;
         $this->mappingHelper = $mappingHelper;
-        $this->escaper = $escaper ?: ObjectManager::getInstance()->get(Escaper::class);
+        $this->escaper = $escaper;
     }
 
     /**
